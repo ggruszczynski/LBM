@@ -74,4 +74,3 @@ data1=pd.DataFrame(data_temp, columns=['Model','Nodes','Devices','Time','X','Y',
     data2=pd.DataFrame([size1,size2,size3], columns=columns)'''
 
 data1.to_csv(r'export_dataframe.csv', header=True, index=False)
-print(data1)
