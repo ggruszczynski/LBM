@@ -5,8 +5,11 @@ import re
 from glob import glob1
 import pandas as pd
 
-path = "G:\Python"
-results = "G:\Studia\Przejsciowka\Results\logs"
+os.chdir('./')
+wd = os.getcwd()
+print(wd)
+results = os.path.join(wd, 'logs')
+
 # Pattern for getting data from outputs
 pattern_nodes = re.compile(r'(p\d{4})\b', re.IGNORECASE)
 pattern_model = re.compile(r'model\: (\w+)', re.I)
@@ -37,6 +40,7 @@ for txtFile in glob1(results, "*.out"):
     dane = os.path.join(results, txtFile)
     with open(dane, "r") as f:
         content = f.read()
+
     matches_nodes = pattern_nodes.finditer(content)
     matches_model = pattern_model.finditer(content)
     matches_size = pattern_size.finditer(content)
@@ -85,3 +89,4 @@ data1 = pd.DataFrame(data_temp, columns=['Name', 'Model', 'Nodes', 'Devices', 'S
     data2=pd.DataFrame([size1,size2,size3], columns=columns)'''
 
 data1.to_csv(r'export_dataframe.csv', header=True, index=False)
+print(data1)
