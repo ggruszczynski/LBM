@@ -5,8 +5,12 @@ import re
 from glob import glob1
 import pandas as pd
 
-path = "G:\Python"
-results = "G:\Studia\Przejsciowka\Results\logs"
+# path="G:\Python"
+# results="G:\Studia\Przejsciowka\Results\logs"
+
+wd = os.getcwd()
+results = os.path.join(wd, 'logs')
+
 # Pattern for getting data from outputs
 pattern_nodes = re.compile(r'(p\d{4})\b', re.IGNORECASE)
 pattern_model = re.compile(r'model\: (\w+)', re.I)
