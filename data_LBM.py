@@ -5,8 +5,10 @@ from glob import glob1
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import timeit
 
-def DataframeCreator():
+
+def FileDataCreator():
     os.chdir('./')
     wd = os.getcwd()
     results = os.path.join(wd, 'logs')
@@ -56,7 +58,63 @@ def DataframeCreator():
         a_series = pd.Series(to_append, index=data_frame.columns)
         data_frame = data_frame.append(a_series, ignore_index=True)
 
-    data_frame.to_csv(r'export_dataframe2.csv', header=True, index=False)
+    data_frame.to_csv(r'export_dataframe.csv', header=True, index=False)
+
+def PlotCreator():
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 16
+    fig_size[1] = 8
+    plt.rcParams["figure.figsize"] = fig_size
+    df1 = pd.read_csv('export_dataframe.csv')
+    F1 = df1['Model'].unique().tolist()
+    Filt = [(df1['Model'] == a) for a in F1]
+    filt=Filt[0]
+    filt2=Filt[1]
+    x1 = df1.loc[filt]['Devices']
+    x2 = df1.loc[filt2]['Devices']
+    y1 = df1.loc[filt]['Speed']
+    y2 = df1.loc[filt2]['Speed']
+    m1, b1 = np.polyfit(x1, y1, 1)
+    m2, b2 = np.polyfit(x2, y2, 1)
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, constrained_layout=True)
+    # fig.figsize=(4,12)
+    # plt.figure(figsize=(200,500))
+    fig.suptitle('Weak Scaling', fontsize=25)
+
+    ax1.plot(df1.loc[filt]['Devices'], df1.loc[filt]['Speed'], 'gx')
+    ax2.plot(df1.loc[filt2]['Devices'], df1.loc[filt2]['Speed'], 'gx')
+    x = np.linspace(1, 13, 100)
+    ax1.plot(x, m1 * x + b1, 'r--', linewidth=2, label='Best fit line')
+    ax2.plot(x, m2 * x + b2, 'r--', linewidth=2, label='Best fit line')
+    # fig.tight_layout(pad=2.0)
+    # plt.setp(ax2, xlabel='Number of GPU')
+    ax1.legend(shadow=True, fancybox=True)
+    ax2.legend(shadow=True, fancybox=True)
+    ax1.set_title('d3q27q27', fontsize=20)
+    ax2.set_title('d3q27q7', fontsize=20)
+    ax1.set_xlabel('Number of GPU', fontsize=18)
+    ax1.set_ylabel('MLBUps', fontsize=18)
+    ax2.set_xlabel('Number of GPU', fontsize=18)
+    ax2.set_ylabel('MLBUps', fontsize=18)
+    ax1.set_ylim(ymin=0)
+    ax2.set_ylim(ymin=0, ymax=None)
+
+    # ax1.set_title('Title', fontsize=14)
+    ax1.set_xticks(np.arange(0, 13, 1))
+    ax2.set_xticks(np.arange(0, 13, 1))
+    ax1.grid(True)
+    ax2.grid(True)
+    fig.savefig('weak_scaling.png', dpi=600)
 
 
-DataframeCreator()
+
+start=timeit.default_timer()
+wd = os.getcwd()
+path= os.path.join(wd, 'export_dataframe.csv')
+if os.path.isfile(path):
+    PlotCreator()
+else:
+    FileDataCreator()
+
+t1 = float(timeit.default_timer()-start)
+print ("Czas :", str(t1))

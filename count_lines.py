@@ -1,10 +1,11 @@
 import os
 import numpy as np
-import shutil
 import re
 from glob import glob1
 import pandas as pd
+import timeit
 
+start=timeit.default_timer()
 os.chdir('./')
 wd = os.getcwd()
 print(wd)
@@ -29,12 +30,6 @@ size2 = []
 size3 = []
 speed = []
 name = []
-'''
-device_num=np.array([])
-size1=np.array([])
-size2=np.array([])
-size3=np.array([])
-speed=np.array([])'''
 
 for txtFile in glob1(results, "*.out"):
     dane = os.path.join(results, txtFile)
@@ -47,46 +42,39 @@ for txtFile in glob1(results, "*.out"):
     matches_devices = pattern_devices.findall(content)
     matches_time = pattern_time.finditer(content)
     matches_speed = pattern_speed.finditer(content)
-    # print(type(matches_nodes))
 
     name.append(txtFile)
     speed.append(np.mean(np.array([float(match.group(1)) for match in matches_speed])))
     for match in matches_model:
-        temp = match.group(1)
-        model.append(temp)  # why you cannot make .append(match.group(1)) in oneline?
+        Model = match.group(1)
+        model.append(Model)
     if pattern_time.search(content) == None:
-        time.append(None)
+        Time = None
+        time.append(Time)
     else:
         for match in matches_time:
-            temp = match.group(1)
-        time.append(temp)
+            Time = match.group(1)
+        time.append(Time)
     temp = []
+    Node = []
     for match in matches_nodes:
-        t1 = match.group(1)
-        temp.append(t1)
-    # print(matches_nodes)
-    nodes.append(temp)
-    device_num.append(len(matches_devices))
+        temp = match.group(1)
+        Node.append(temp)
+    nodes.append(Node)
+    Devices = len(matches_devices)
+    device_num.append(Devices)
     for match in matches_size:
-        x = match.group(1)
-        size1.append(x)
-        y = match.group(2)
-        size2.append(y)
-        z = match.group(3)
-        size3.append(z)
-
-    # plik.writelines(matches_model.group(1)+"\t"+matches_nodes+"\t"+matches_size.group(1)+"x"+matches_size.group(2)+"x"+matches_size.group(3))
-    '''for s in matches_model:
-        plik.writelines("\n"+s.group(1)+"\t"+str(len(matches_devices)))
-    #print(matches_nodes)'''
+        SizeX = match.group(1)
+        size1.append(SizeX)
+        SizeY = match.group(2)
+        size2.append(SizeY)
+        SizeZ = match.group(3)
+        size3.append(SizeZ)
 
 data_temp = list(zip(name, model, nodes, device_num, speed, time, size1, size2, size3))
 data1 = pd.DataFrame(data_temp, columns=['Name', 'Model', 'Nodes', 'Devices', 'Speed', 'Time', 'X', 'Y', 'Z'])
 
-# for later-try to make multindex
-'''data_temp = list(zip(size1, size2, size3))
-    columns=pd.MultiIndex.from_product([['Size'],['X','Y','Z']])
-    data2=pd.DataFrame([size1,size2,size3], columns=columns)'''
-
 data1.to_csv(r'export_dataframe.csv', header=True, index=False)
-print(data1)
+
+t1 = float(timeit.default_timer()-start)
+print ("Czas :", str(t1))
