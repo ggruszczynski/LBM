@@ -45,7 +45,6 @@ def FileDataCreator():
             for match in matches_time:
                 Time = match.group(1)
         Node = []
-        temp = None;
         for match in matches_nodes:
             temp = match.group(1)
             Node.append(temp)
