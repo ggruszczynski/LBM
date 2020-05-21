@@ -13,7 +13,7 @@ def FileDataCreator():
     wd = os.getcwd()
     results = os.path.join(wd, 'logs')
     # Pattern for getting data from outputs
-    pattern_nodes = re.compile(r'(p\d{4})\b', re.IGNORECASE)
+    pattern_nodes = re.compile(r'(p\d{4})\n', re.IGNORECASE)
     pattern_model = re.compile(r'model\: (\w+)', re.I)
     pattern_size = re.compile(r'Global lattice size: (\d+)x(\d+)x(\d+)', re.I)
     pattern_devices = re.compile(r'Selecting device', re.I)
@@ -26,7 +26,7 @@ def FileDataCreator():
         with open(dane, "r") as f:
             content = f.read()
 
-        #find data that fits to patterns
+        # find data that fits to patterns
         matches_nodes = pattern_nodes.finditer(content)
         matches_model = pattern_model.finditer(content)
         matches_size = pattern_size.finditer(content)
@@ -34,7 +34,7 @@ def FileDataCreator():
         matches_time = pattern_time.finditer(content)
         matches_speed = pattern_speed.finditer(content)
 
-        #need to capture data to a list
+        # need to capture data to a list
         Name = txtFile
         Speed = np.mean(np.array([float(match.group(1)) for match in matches_speed]))
         for match in matches_model:
@@ -53,12 +53,13 @@ def FileDataCreator():
             SizeX = match.group(1)
             SizeY = match.group(2)
             SizeZ = match.group(3)
-        #creating a list and pandas row to append to DataFrame
+        # creating a list and pandas row to append to DataFrame
         to_append = [Name, Model, Node, Devices, Speed, Time, SizeX, SizeY, SizeZ]
         a_series = pd.Series(to_append, index=data_frame.columns)
         data_frame = data_frame.append(a_series, ignore_index=True)
 
     data_frame.to_csv(r'export_dataframe.csv', header=True, index=False)
+
 
 def PlotCreator():
     fig_size = plt.rcParams["figure.figsize"]
@@ -67,9 +68,29 @@ def PlotCreator():
     plt.rcParams["figure.figsize"] = fig_size
     df1 = pd.read_csv('export_dataframe.csv')
     F1 = df1['Model'].unique().tolist()
-    Filt = [(df1['Model'] == a) for a in F1]
-    filt=Filt[0]
-    filt2=Filt[1]
+    Filt_model = [(df1['Model'] == a) for a in F1]
+    x_uniq = df1['X'].unique().tolist()
+    y_uniq = df1['Y'].unique().tolist()
+    z_uniq = df1['Z'].unique().tolist()
+    Filt_size_x = [(df1['X'] == i_x) for i_x in x_uniq]
+    Filt_size_y = [(df1['Y'] == i_y) for i_y in y_uniq]
+    Filt_size_z = [(df1['Z'] == i_z) for i_z in z_uniq]
+    # Making Strong Scaling Plot
+    for i in range(len(Filt_model)):
+        for i_x in range(len(Filt_size_x)):
+            for i_y in range(len(Filt_size_y)):
+                for i_z in range(len(Filt_size_z)):
+                    temp_df = df1.loc[Filt_model[i]].loc[Filt_size_x[i_x]].loc[Filt_size_y[i_y]].loc[Filt_size_z[i_z]]
+                    if temp_df.empty == False:
+                        x = temp_df['Devices']
+                        y = temp_df['Speed']
+                        name = temp_df['Model'].unique()
+                        make_plot_strong(x, y, name[0])
+                    else:
+                        continue
+
+    filt = Filt_model[0]
+    filt2 = Filt_model[1]
     x1 = df1.loc[filt]['Devices']
     x2 = df1.loc[filt2]['Devices']
     y1 = df1.loc[filt]['Speed']
@@ -107,14 +128,34 @@ def PlotCreator():
     fig.savefig('weak_scaling.png', dpi=600)
 
 
+def make_plot_weak(x, y, name):
+    fig = plt.plot(x, y, 'gx')
+    plt.title('Strong scaling', fontsize=22)
+    plt.xlabel('Number of GPU', fontsize=18)
+    plt.ylabel('MLBUps', fontsize=18)
+    plt.ylim(ymin=0)
+    plt.grid(True)
+    plt.savefig("Weak_scaling" + name, dpi=600)
 
-start=timeit.default_timer()
+
+def make_plot_strong(x, y, name):
+    fig = plt.plot(x, y, 'gx')
+    plt.title('Strong scaling', fontsize=22)
+    plt.xlabel('Number of GPU', fontsize=18)
+    plt.ylabel('MLBUps', fontsize=18)
+    plt.ylim(ymin=0)
+    plt.grid(True)
+    plt.savefig("Strog_scaling" + name, dpi=600)
+
+
+start = timeit.default_timer()
 wd = os.getcwd()
-path= os.path.join(wd, 'export_dataframe.csv')
+path = os.path.join(wd, 'export_dataframe.csv')
+
 if os.path.isfile(path):
     PlotCreator()
 else:
     FileDataCreator()
 
-t1 = float(timeit.default_timer()-start)
-print ("Czas :", str(t1))
+t1 = float(timeit.default_timer() - start)
+print("Czas :", str(t1))
