@@ -75,20 +75,19 @@ def PlotCreator():
     Filt_size_x = [(df1['X'] == i_x) for i_x in x_uniq]
     Filt_size_y = [(df1['Y'] == i_y) for i_y in y_uniq]
     Filt_size_z = [(df1['Z'] == i_z) for i_z in z_uniq]
-    #Making Strong Scaling Plot
+    # Making Strong Scaling Plot
     for i in range(len(Filt_model)):
         for i_x in range(len(Filt_size_x)):
             for i_y in range(len(Filt_size_y)):
                 for i_z in range(len(Filt_size_z)):
-                    temp_df=df1.loc[Filt_model[i]].loc[Filt_size_x[i_x]].loc[Filt_size_y[i_y]].loc[Filt_size_z[i_z]]
-                    if temp_df.empty==False:
+                    temp_df = df1.loc[Filt_model[i]].loc[Filt_size_x[i_x]].loc[Filt_size_y[i_y]].loc[Filt_size_z[i_z]]
+                    if temp_df.empty == False:
                         x = temp_df['Devices']
                         y = temp_df['Speed']
-                        name = temp_df['Mode'][0]
-                        make_plot_strong(x, y, name)
+                        name = temp_df['Model'].unique()
+                        make_plot_strong(x, y, name[0])
                     else:
                         continue
-
 
     filt = Filt_model[0]
     filt2 = Filt_model[1]
@@ -129,26 +128,25 @@ def PlotCreator():
     fig.savefig('weak_scaling.png', dpi=600)
 
 
+def make_plot_weak(x, y, name):
+    fig = plt.plot(x, y, 'gx')
+    plt.title('Strong scaling', fontsize=22)
+    plt.xlabel('Number of GPU', fontsize=18)
+    plt.ylabel('MLBUps', fontsize=18)
+    plt.ylim(ymin=0)
+    plt.grid(True)
+    plt.savefig("Weak_scaling" + name, dpi=600)
 
-def make_plot_weak(x,y,name):
-    fig=plt.plot(x,y,'gx')
-    fig.legend(shadow=True, fancybox=True)
-    fig.set_title('Weak scaling'+name, fontsize=22)
-    fig.set_xlabel('Number of GPU', fontsize=18)
-    fig.set_ylabel('MLBUps', fontsize=18)
-    fig.set_ylim(ymin=0, ymax=None)
-    fig.grid(True)
-    fig.savefig(name+'_weak_scaling.png', dpi = 600)
 
-def make_plot_strong(x,y,name):
-    fig=plt.plot(x,y,'gx')
-    fig.legend(shadow=True, fancybox=True)
-    fig.set_title('Weak scaling'+name, fontsize=22)
-    fig.set_xlabel('Number of GPU', fontsize=18)
-    fig.set_ylabel('MLBUps', fontsize=18)
-    fig.set_ylim(ymin=0, ymax=None)
-    fig.grid(True)
-    fig.savefig(name+'_strong_scaling.png', dpi = 600)
+def make_plot_strong(x, y, name):
+    fig = plt.plot(x, y, 'gx')
+    plt.title('Strong scaling', fontsize=22)
+    plt.xlabel('Number of GPU', fontsize=18)
+    plt.ylabel('MLBUps', fontsize=18)
+    plt.ylim(ymin=0)
+    plt.grid(True)
+    plt.savefig("Strog_scaling" + name, dpi=600)
+
 
 start = timeit.default_timer()
 wd = os.getcwd()
