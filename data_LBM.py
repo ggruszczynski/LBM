@@ -107,6 +107,35 @@ def PlotCreator():
     ax2.grid(True)
     fig.savefig('weak_scaling.png', dpi=600)
 
+    for i in range(len(Filt)):
+        temp_df = df1[Filt[i]]
+        x = temp_df['Devices']
+        y = temp_df['Speed']
+        name = temp_df['Mode'][0]
+        if 0 > 0:#wymyslic warunki
+            make_plot_strong(x, y, name)
+        elif 2 > 3:
+            make_plot_weak(x, y, name)
+
+def make_plot_weak(x,y,name):
+    fig=plt.plot(x,y,'gx')
+    fig.legend(shadow=True, fancybox=True)
+    fig.set_title('Weak scaling'+name, fontsize=22)
+    fig.set_xlabel('Number of GPU', fontsize=18)
+    fig.set_ylabel('MLBUps', fontsize=18)
+    fig.set_ylim(ymin=0, ymax=None)
+    fig.grid(True)
+    fig.savefig(name+'_weak_scaling.png', dpi = 600)
+
+def make_plot_strong(x,y,name):
+    fig=plt.plot(x,y,'gx')
+    fig.legend(shadow=True, fancybox=True)
+    fig.set_title('Weak scaling'+name, fontsize=22)
+    fig.set_xlabel('Number of GPU', fontsize=18)
+    fig.set_ylabel('MLBUps', fontsize=18)
+    fig.set_ylim(ymin=0, ymax=None)
+    fig.grid(True)
+    fig.savefig(name+'_strong_scaling.png', dpi = 600)
 
 start = timeit.default_timer()
 wd = os.getcwd()
