@@ -68,9 +68,30 @@ def PlotCreator():
     plt.rcParams["figure.figsize"] = fig_size
     df1 = pd.read_csv('export_dataframe.csv')
     F1 = df1['Model'].unique().tolist()
-    Filt = [(df1['Model'] == a) for a in F1]
-    filt = Filt[0]
-    filt2 = Filt[1]
+    Filt_model = [(df1['Model'] == a) for a in F1]
+    x_uniq = df1['X'].unique().tolist()
+    y_uniq = df1['Y'].unique().tolist()
+    z_uniq = df1['Z'].unique().tolist()
+    Filt_size_x = [(df1['X'] == i_x) for i_x in x_uniq]
+    Filt_size_y = [(df1['Y'] == i_y) for i_y in y_uniq]
+    Filt_size_z = [(df1['Z'] == i_z) for i_z in z_uniq]
+    #Making Strong Scaling Plot
+    for i in range(len(Filt_model)):
+        for i_x in range(len(Filt_size_x)):
+            for i_y in range(len(Filt_size_y)):
+                for i_z in range(len(Filt_size_z)):
+                    temp_df=df1.loc[Filt_model[i]].loc[Filt_size_x[i_x]].loc[Filt_size_y[i_y]].loc[Filt_size_z[i_z]]
+                    if temp_df.empty==False:
+                        x = temp_df['Devices']
+                        y = temp_df['Speed']
+                        name = temp_df['Mode'][0]
+                        make_plot_strong(x, y, name)
+                    else:
+                        continue
+
+
+    filt = Filt_model[0]
+    filt2 = Filt_model[1]
     x1 = df1.loc[filt]['Devices']
     x2 = df1.loc[filt2]['Devices']
     y1 = df1.loc[filt]['Speed']
@@ -107,15 +128,7 @@ def PlotCreator():
     ax2.grid(True)
     fig.savefig('weak_scaling.png', dpi=600)
 
-    for i in range(len(Filt)):
-        temp_df = df1[Filt[i]]
-        x = temp_df['Devices']
-        y = temp_df['Speed']
-        name = temp_df['Mode'][0]
-        if 0 > 0:#wymyslic warunki
-            make_plot_strong(x, y, name)
-        elif 2 > 3:
-            make_plot_weak(x, y, name)
+
 
 def make_plot_weak(x,y,name):
     fig=plt.plot(x,y,'gx')
