@@ -76,6 +76,7 @@ def PlotCreator():
     Filt_size_y = [(df1['Y'] == i_y) for i_y in y_uniq]
     Filt_size_z = [(df1['Z'] == i_z) for i_z in z_uniq]
     # Making Strong Scaling Plot
+    a=0
     for i in range(len(Filt_model)):
         for i_x in range(len(Filt_size_x)):
             for i_y in range(len(Filt_size_y)):
@@ -85,47 +86,12 @@ def PlotCreator():
                         x = temp_df['Devices']
                         y = temp_df['Speed']
                         name = temp_df['Model'].unique()
-                        make_plot_strong(x, y, name[0])
+                        make_plot_strong(x, y, name[0]+str(a))
+                        a += 1;
+
                     else:
                         continue
 
-    filt = Filt_model[0]
-    filt2 = Filt_model[1]
-    x1 = df1.loc[filt]['Devices']
-    x2 = df1.loc[filt2]['Devices']
-    y1 = df1.loc[filt]['Speed']
-    y2 = df1.loc[filt2]['Speed']
-    m1, b1 = np.polyfit(x1, y1, 1)
-    m2, b2 = np.polyfit(x2, y2, 1)
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, constrained_layout=True)
-    # fig.figsize=(4,12)
-    # plt.figure(figsize=(200,500))
-    fig.suptitle('Weak Scaling', fontsize=25)
-
-    ax1.plot(df1.loc[filt]['Devices'], df1.loc[filt]['Speed'], 'gx')
-    ax2.plot(df1.loc[filt2]['Devices'], df1.loc[filt2]['Speed'], 'gx')
-    x = np.linspace(1, 13, 100)
-    ax1.plot(x, m1 * x + b1, 'r--', linewidth=2, label='Best fit line')
-    ax2.plot(x, m2 * x + b2, 'r--', linewidth=2, label='Best fit line')
-    # fig.tight_layout(pad=2.0)
-    # plt.setp(ax2, xlabel='Number of GPU')
-    ax1.legend(shadow=True, fancybox=True)
-    ax2.legend(shadow=True, fancybox=True)
-    ax1.set_title('d3q27q27', fontsize=20)
-    ax2.set_title('d3q27q7', fontsize=20)
-    ax1.set_xlabel('Number of GPU', fontsize=18)
-    ax1.set_ylabel('MLBUps', fontsize=18)
-    ax2.set_xlabel('Number of GPU', fontsize=18)
-    ax2.set_ylabel('MLBUps', fontsize=18)
-    ax1.set_ylim(ymin=0)
-    ax2.set_ylim(ymin=0, ymax=None)
-
-    # ax1.set_title('Title', fontsize=14)
-    ax1.set_xticks(np.arange(0, 13, 1))
-    ax2.set_xticks(np.arange(0, 13, 1))
-    ax1.grid(True)
-    ax2.grid(True)
-    fig.savefig('weak_scaling.png', dpi=600)
 
 
 def make_plot_weak(x, y, name):
@@ -134,8 +100,10 @@ def make_plot_weak(x, y, name):
     plt.xlabel('Number of GPU', fontsize=18)
     plt.ylabel('MLBUps', fontsize=18)
     plt.ylim(ymin=0)
+    plt.xticks(np.arange(0, max(x) + 1, 1.0))
     plt.grid(True)
     plt.savefig("Weak_scaling" + name, dpi=600)
+    plt.clf()
 
 
 def make_plot_strong(x, y, name):
@@ -144,8 +112,10 @@ def make_plot_strong(x, y, name):
     plt.xlabel('Number of GPU', fontsize=18)
     plt.ylabel('MLBUps', fontsize=18)
     plt.ylim(ymin=0)
+    plt.xticks(np.arange(0, max(x)+1, 1.0))
     plt.grid(True)
-    plt.savefig("Strog_scaling" + name, dpi=600)
+    plt.savefig("Strong_scaling" + name, dpi=600)
+    plt.clf()
 
 
 start = timeit.default_timer()
