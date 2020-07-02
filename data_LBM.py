@@ -20,7 +20,7 @@ def FileDataCreator():
     pattern_time = re.compile(r'Total duration: (\d+\.\d+)', re.I)
     pattern_speed = re.compile(r'(\d+\.\d+) MLBUps', re.I)
 
-    data_frame = pd.DataFrame(columns=['Name', 'Model', 'Nodes', 'Devices', 'Speed', 'Time', 'X', 'Y', 'Z'])
+    data_frame = pd.DataFrame(columns=['Name', 'Model', 'Nodes', 'Devices', 'Speed', 'Time', 'X', 'Y', 'Z', 'Total size'])
     for txtFile in glob1(results, "*.out"):
         dane = os.path.join(results, txtFile)
         with open(dane, "r") as f:
@@ -53,8 +53,11 @@ def FileDataCreator():
             SizeX = match.group(1)
             SizeY = match.group(2)
             SizeZ = match.group(3)
+
+        Total_size=int(SizeX)*int(SizeY)*int(SizeZ);
+
         # creating a list and pandas row to append to DataFrame
-        to_append = [Name, Model, Node, Devices, Speed, Time, SizeX, SizeY, SizeZ]
+        to_append = [Name, Model, Node, Devices, Speed, Time, SizeX, SizeY, SizeZ, Total_size]
         a_series = pd.Series(to_append, index=data_frame.columns)
         data_frame = data_frame.append(a_series, ignore_index=True)
 
@@ -75,6 +78,21 @@ def PlotCreator():
     Filt_size_x = [(df1['X'] == i_x) for i_x in x_uniq]
     Filt_size_y = [(df1['Y'] == i_y) for i_y in y_uniq]
     Filt_size_z = [(df1['Z'] == i_z) for i_z in z_uniq]
+    total_uniq = (df1['Total size'] / df1['Devices']).unique().tolist()
+    weak_filt = [df1['Y'] / df1['Devices'] == w_f for w_f in total_uniq]
+
+    #Making Weak Scaling Plot
+    a=0
+    for i in range(len(Filt_model)):
+        for iter in range(len(weak_filt)):
+            temp_df = df1.loc[Filt_model[i]].loc[weak_filt[iter]]
+            if not temp_df.empty:
+                a += 1
+                x = temp_df['Devices']
+                y = temp_df['Speed']
+                name = temp_df['Model'].unique()
+                make_plot_weak(x, y, name[0] + str(a))
+
     # Making Strong Scaling Plot
     a=0
     for i in range(len(Filt_model)):
@@ -89,8 +107,7 @@ def PlotCreator():
                         make_plot_strong(x, y, name[0]+str(a))
                         a += 1;
 
-                    else:
-                        continue
+
 
 
 

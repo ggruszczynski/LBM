@@ -1,10 +1,10 @@
-Name,Model,Nodes,Devices,Speed,Time,X,Y,Z
-slurm-12120.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,109.70105062082139,,1024,128,3
-slurm-12121.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,140.388855721393,,1024,128,3
-slurm-12122.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,167.08835845896147,,1024,128,3
-slurm-12123.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,155.45482502651112,,2048,256,3
-slurm-12124.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,228.46683673469389,,2048,256,3
-slurm-12125.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,300.13902662993576,,2048,256,3
-slurm-12126.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,191.48888888888888,,4096,512,3
-slurm-12127.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,314.9605042016807,,4096,512,3
-slurm-12128.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,441.5705050505051,,4096,512,3
+Name,Model,Nodes,Devices,Speed,Time,X,Y,Z,Total size
+slurm-12120.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,109.70105062082139,,1024,128,3,393216
+slurm-12121.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,140.388855721393,,1024,128,3,393216
+slurm-12122.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,167.08835845896147,,1024,128,3,393216
+slurm-12123.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,155.45482502651112,,2048,256,3,1572864
+slurm-12124.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,228.46683673469389,,2048,256,3,1572864
+slurm-12125.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,300.13902662993576,,2048,256,3,1572864
+slurm-12126.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],1,191.48888888888888,,4096,512,3,6291456
+slurm-12127.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],2,314.9605042016807,,4096,512,3,6291456
+slurm-12128.out,d3q27q27_cm_cht_OutFlowNeumann_AVG_IBB,[],4,441.5705050505051,,4096,512,3,6291456
