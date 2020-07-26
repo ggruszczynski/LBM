@@ -40,7 +40,7 @@ def FileDataCreator():
 
         # need to capture data to a list
         Name = txtFile
-        Speed = np.mean(np.array([float(match.group(1)) for match in matches_speed]))
+        Speed = np.mean(np.array([float(match.group(1)) for match in matches_speed])[-100:])
         for match in matches_model:
             Model = match.group(1)
         if pattern_time.search(content) == None:
@@ -94,6 +94,10 @@ def PlotCreator():
     # For weak scaling
     size_uniq = df1['Local size'].unique().tolist()
     weak_filt = [df1['Local size'] == size for size in size_uniq]
+    # for plot speedup(A/V)
+    total_uniq = df1['Total size'].unique().tolist()
+    Filt_total_size= [(df1['Total size'] == totalSize)  for totalSize in total_uniq]
+
 
     # Making Weak Scaling Plot
     a = 0
@@ -121,14 +125,27 @@ def PlotCreator():
                         name = temp_df['Model'].unique()
                         global_size = str(temp_df['X'].unique().tolist()[0]) + 'x' + str(temp_df['Y'].unique().tolist()[0]) + 'x' + str(temp_df['Z'].unique().tolist()[0])
                         make_plot_strong(x, y, name[0] + str(a), global_size)
-                        a += 1;
+                        a += 1
+
+    # Plot ghost layers
+    for i in range(len(Filt_model)):
+        for iter in range(len( Filt_total_size)):
+            temp_df = df1.loc[Filt_model[i]].loc[weak_filt[iter]]
+            if not temp_df.empty and len(temp_df['Devices']) > 2:
+                x = temp_df['Devices']
+                y = temp_df['Speed']
+                name = temp_df['Model'].unique()
+                total_size = str(temp_df['Total size'].unique().tolist()[0])
+                make_plot_weak(x, y, name[0] , total_size)
+
+
 
 
 def make_plot_weak(x, y, name, size):
     fig = plt.plot(x, y, 'gx')
-    plt.title('Weak scaling ' + size, fontsize=22)
-    plt.xlabel('Number of GPU', fontsize=18)
-    plt.ylabel('MLBUps', fontsize=18)
+    plt.title('Weak scaling ' + size, fontsize=32)
+    plt.xlabel('Number of GPU', fontsize=24)
+    plt.ylabel('MLBUps', fontsize=24)
     plt.ylim(ymin=0)
     plt.xticks(np.arange(0, max(x) + 1, 1.0))
     plt.grid(True)
@@ -138,15 +155,25 @@ def make_plot_weak(x, y, name, size):
 
 def make_plot_strong(x, y, name, size):
     fig = plt.plot(x, y, 'gx')
-    plt.title('Strong scaling '+size, fontsize=22)
-    plt.xlabel('Number of GPU', fontsize=18)
-    plt.ylabel('MLBUps', fontsize=18)
+    plt.title('Strong scaling '+size, fontsize=32)
+    plt.xlabel('Number of GPU', fontsize=24)
+    plt.ylabel('MLBUps', fontsize=24)
     plt.ylim(ymin=0)
     plt.xticks(np.arange(0, max(x) + 1, 1.0))
     plt.grid(True)
     plt.savefig("Strong_scaling_" + name, dpi=600)
     plt.clf()
 
+def make_plot_ghost(x, y, name, size):
+    fig = plt.plot(x, y, 'gx')
+    plt.title('Speedup in function of A/V'+size, fontsize=32)
+    plt.xlabel('A/V', fontsize=24)
+    plt.ylabel('MLBUps', fontsize=24)
+    plt.ylim(ymin=0)
+    plt.xticks(np.arange(0, max(x) + 1, 1.0))
+    plt.grid(True)
+    plt.savefig("Strong_scaling_" + name, dpi=600)
+    plt.clf()
 
 def __main__():
     start = timeit.default_timer()
