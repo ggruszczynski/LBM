@@ -98,7 +98,7 @@ def PlotCreator():
     GPU_load = (df1['Total size'] / df1['Devices']).unique().tolist()
     Filt_GPU_load = [(df1['Total size'] / df1['Devices'] == load) for load in GPU_load]
 
-    '''
+    
     # Making Weak Scaling Plot
     a = 0
     for i in range(len(Filt_model)):
@@ -127,7 +127,7 @@ def PlotCreator():
                             temp_df['Y'].unique().tolist()[0]) + 'x' + str(temp_df['Z'].unique().tolist()[0])
                         make_plot_strong(x, y, name[0] + str(a), global_size)
                         a += 1
-    '''
+
 
     # Plot ghost layers
     a = 0
