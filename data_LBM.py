@@ -59,7 +59,7 @@ def FileDataCreator():
             SizeZ = match.group(3)
 
         Total_size = int(SizeX) * int(SizeY) * int(SizeZ)
-        #Global_size = SizeX + "x" + SizeY + "x" + SizeZ
+        # Global_size = SizeX + "x" + SizeY + "x" + SizeZ
 
         for match in matches_local_size:
             LocalX = match.group(1)
@@ -95,10 +95,10 @@ def PlotCreator():
     size_uniq = df1['Local size'].unique().tolist()
     weak_filt = [df1['Local size'] == size for size in size_uniq]
     # for plot speedup(A/V)
-    total_uniq = df1['Total size'].unique().tolist()
-    Filt_total_size= [(df1['Total size'] == totalSize)  for totalSize in total_uniq]
+    GPU_load = (df1['Total size'] / df1['Devices']).unique().tolist()
+    Filt_GPU_load = [(df1['Total size'] / df1['Devices'] == load) for load in GPU_load]
 
-
+    '''
     # Making Weak Scaling Plot
     a = 0
     for i in range(len(Filt_model)):
@@ -109,7 +109,7 @@ def PlotCreator():
                 x = temp_df['Devices']
                 y = temp_df['Speed']
                 name = temp_df['Model'].unique()
-                local_size=str(temp_df['Local size'].unique().tolist()[0])
+                local_size = str(temp_df['Local size'].unique().tolist()[0])
                 make_plot_weak(x, y, name[0] + str(a), local_size)
 
     # Making Strong Scaling Plot
@@ -123,22 +123,24 @@ def PlotCreator():
                         x = temp_df['Devices']
                         y = temp_df['Speed']
                         name = temp_df['Model'].unique()
-                        global_size = str(temp_df['X'].unique().tolist()[0]) + 'x' + str(temp_df['Y'].unique().tolist()[0]) + 'x' + str(temp_df['Z'].unique().tolist()[0])
+                        global_size = str(temp_df['X'].unique().tolist()[0]) + 'x' + str(
+                            temp_df['Y'].unique().tolist()[0]) + 'x' + str(temp_df['Z'].unique().tolist()[0])
                         make_plot_strong(x, y, name[0] + str(a), global_size)
                         a += 1
+    '''
 
     # Plot ghost layers
+    a = 0
     for i in range(len(Filt_model)):
-        for iter in range(len( Filt_total_size)):
-            temp_df = df1.loc[Filt_model[i]].loc[weak_filt[iter]]
-            if not temp_df.empty and len(temp_df['Devices']) > 2:
-                x = temp_df['Devices']
+        for iter in range(len(Filt_GPU_load)):
+            temp_df = df1.loc[Filt_model[i]].loc[Filt_GPU_load[iter]]
+            if not temp_df.empty and len(temp_df['Devices']) > 4:
+                x = temp_df['Devices'] * temp_df['X'] * temp_df['Z'] / (temp_df['Total size']/temp_df['Devices'])
                 y = temp_df['Speed']
                 name = temp_df['Model'].unique()
-                total_size = str(temp_df['Total size'].unique().tolist()[0])
-                make_plot_weak(x, y, name[0] , total_size)
-
-
+                #total_size = str((temp_df['Total size']/df1['Devices']).unique().tolist()[0])
+                make_plot_ghost(x, y, name[0] + str(a))
+            a += 1
 
 
 def make_plot_weak(x, y, name, size):
@@ -155,7 +157,7 @@ def make_plot_weak(x, y, name, size):
 
 def make_plot_strong(x, y, name, size):
     fig = plt.plot(x, y, 'gx')
-    plt.title('Strong scaling '+size, fontsize=32)
+    plt.title('Strong scaling ' + size, fontsize=32)
     plt.xlabel('Number of GPU', fontsize=24)
     plt.ylabel('MLBUps', fontsize=24)
     plt.ylim(ymin=0)
@@ -164,16 +166,17 @@ def make_plot_strong(x, y, name, size):
     plt.savefig("Strong_scaling_" + name, dpi=600)
     plt.clf()
 
-def make_plot_ghost(x, y, name, size):
+
+def make_plot_ghost(x, y, name):
     fig = plt.plot(x, y, 'gx')
-    plt.title('Speedup in function of A/V'+size, fontsize=32)
+    plt.title('Speedup in function of A/V', fontsize=32)
     plt.xlabel('A/V', fontsize=24)
     plt.ylabel('MLBUps', fontsize=24)
     plt.ylim(ymin=0)
-    plt.xticks(np.arange(0, max(x) + 1, 1.0))
     plt.grid(True)
-    plt.savefig("Strong_scaling_" + name, dpi=600)
+    plt.savefig("AV_plot_" + name, dpi=600)
     plt.clf()
+
 
 def __main__():
     start = timeit.default_timer()
